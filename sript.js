@@ -1,34 +1,42 @@
-// Create map centered on Norfolk
-const map = L.map('map').setView([36.8508, -76.2859], 13);
+window.onload = function () {
 
-// Add map tiles (like Google Maps style)
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+    // Create the map
+    const map = L.map('map').setView([36.8508, -76.2859], 13);
 
-// Add markers
-properties.forEach(property => {
+    // Add map tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-    const marker = L.marker([property.lat, property.lng]).addTo(map);
+    // Check if properties exists
+    if (typeof properties === "undefined") {
+        console.error("properties data not loaded");
+        return;
+    }
 
-    const popupContent = `
-        <div>
-            <div class="popup-title">${property.name}</div>
-            <div>${property.address}</div>
-            <div><strong>Price:</strong> ${property.price}</div>
-            <div><strong>Size:</strong> ${property.sqft}</div>
-        </div>
-    `;
+    // Add markers
+    properties.forEach(property => {
 
-    marker.bindPopup(popupContent);
+        if (!property.lat || !property.lng) return;
 
-    // Hover effect
-    marker.on('mouseover', function () {
-        this.openPopup();
+        const marker = L.marker([property.lat, property.lng]).addTo(map);
+
+        const popupContent = `
+            <strong>${property.name}</strong><br>
+            ${property.address}<br>
+            Price: ${property.price}<br>
+            Size: ${property.sqft}
+        `;
+
+        marker.bindPopup(popupContent);
+
+        marker.on('mouseover', function () {
+            this.openPopup();
+        });
+
+        marker.on('mouseout', function () {
+            this.closePopup();
+        });
     });
 
-    marker.on('mouseout', function () {
-        this.closePopup();
-    });
-});
-``
+};
